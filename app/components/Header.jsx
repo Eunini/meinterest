@@ -47,24 +47,24 @@ function Header() {
         className='hover:bg-gray-300 p-2
         rounded-full cursor-pointer'/>
         <button className='bg-black
-         text-white p-3 px-6 rounded-full
-         text-[25px]
+         text-white p-3 border-0 outline-0
+         text-[18px]
           hidden md:block' onClick={()=>router.push('/')}>Home</button>
         <button className='font-semibold p-3 px-6
-         rounded-full text-[25px]' 
+         rounded-full text-[18px]' 
          onClick={()=>onCreateClick()}>Create</button>
-        <div className='bg-[#e9e9e9] p-3 px-6
+        <div className='bg-[#e9e9e9] p-3
          gap-3 items-center rounded-full w-full hidden md:flex'>
-        <HiSearch className='text-[34px] 
+        <HiSearch className='text-[24px] 
         text-gray-500'/>
         <input type="text" placeholder='Search'
-        className='bg-transparent outline-none w-full text-[25px]' />
+        className='bg-transparent outline-none w-full text-[18px]' />
        
         </div>
-        <HiSearch className='text-[25px] 
+        <HiSearch className='text-[18px] 
         text-gray-500 md:hidden'/>
-        <HiBell className='text-[25px] md:text-[60px] text-gray-500 cursor-pointer'/>
-        <HiChat className='text-[25px] md:text-[60px] text-gray-500 cursor-pointer'/>
+        <HiBell className='text-[18px] md:text-[50px] text-gray-500 cursor-pointer'/>
+        <HiChat className='text-[18px] md:text-[50px] text-gray-500 cursor-pointer'/>
       {session?.user?  
       <Image src={session.user.image} 
        onClick={()=>router.push('/'+session.user.email)}
@@ -72,9 +72,8 @@ function Header() {
         className='hover:bg-gray-300 p-2
         rounded-full cursor-pointer'/>:
 
-        <button className='font-semibold p-2 px-4 rounded-full'
+        <button className='font-semibold p-2 px-4 rounded-full bg-[#e9e9e9] text-white text-[16px]'
          onClick={() => signIn()}>Login</button>}
-
 
 
     </div>

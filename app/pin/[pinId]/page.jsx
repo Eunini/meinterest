@@ -20,7 +20,6 @@ function PinDetail({params}) {
        
         setPinDetail(docSnap.data())
       } else {
-       
         console.log("No such document!");
       }
   }
