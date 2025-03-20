@@ -139,7 +139,7 @@ function Form() {
               type="text"
               onChange={(e) => setLink(e.target.value)}
               placeholder="Add a Destination Link"
-              className="outline-none w-full pb-4 mt-[90px] border-b-[2px] border-gray-400 placeholder-gray-400"
+              className="outline-none w-full mt-[90px] border-b-[2px] border-gray-400 placeholder-gray-400"
             />
           </div>
         </div>

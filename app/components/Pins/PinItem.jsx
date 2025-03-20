@@ -14,10 +14,8 @@ function PinItem({pin}) {
     <div className=''>
        <div class="relative 
        before:absolute
-       before:rounded-3xl
        before:z-10
        hover:bg-gray-600 
-       before:opacity-50
        cursor-pointer
        " onClick={()=>router.push("/pin/"+pin.id)}>
        

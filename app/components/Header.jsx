@@ -87,8 +87,8 @@ function Header() {
       <Image
         src="/logo.png"
         alt="logo"
-        width={60}
-        height={60}
+        width={100}
+        height={100}
         onClick={() => router.push("/")}
         className="hover:bg-gray-300 py-2 px-4 rounded-full cursor-pointer"
       />

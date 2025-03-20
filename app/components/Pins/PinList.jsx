@@ -20,7 +20,7 @@ function PinList({ listOfPins }) {
     >
       {loading
         ? // Render Skeleton while loading
-          Array(10)
+          Array(15)
             .fill(0)
             .map((_, index) => <SkeletonPin key={index} />)
         : // Render Pins when loaded
@@ -29,10 +29,28 @@ function PinList({ listOfPins }) {
   );
 }
 
-// Skeleton component for loading state
+// Skeleton component for loading state with varying heights
 const SkeletonPin = () => {
+  // Create random heights to mimic Pinterest's variable card sizes
+  const getRandomHeight = () => {
+    // Pinterest-like proportions - some shorter, some taller
+    const heights = [150, 180, 220, 250, 280, 320, 350];
+    return heights[Math.floor(Math.random() * heights.length)];
+  };
+  
+  const height = getRandomHeight();
+  
   return (
-    <div className="bg-gray-200 animate-pulse rounded-lg w-full h-[250px]"></div>
+    <div 
+      className="bg-gray-200 animate-pulse rounded-lg w-full mb-4 overflow-hidden"
+      style={{ height: `${height}px` }}
+    >
+      {/* Optional: Add skeleton for pin details */}
+      <div className="absolute bottom-0 w-full p-3">
+        <div className="h-3 bg-gray-300 rounded-full w-2/3 mb-2"></div>
+        <div className="h-2 bg-gray-300 rounded-full w-1/2"></div>
+      </div>
+    </div>
   );
 };
 
