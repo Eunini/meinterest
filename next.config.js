@@ -1,13 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: [
-            'lh3.googleusercontent.com', 
-            'firebasestorage.googleapis.com',
-            'platform-lookaside.fbsbx.com',
-            "res.cloudinary.com"
-        ]
-    }
-};
-
-module.exports = nextConfig;
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "res.cloudinary.com",
+          pathname: "/**",
+        },
+        {
+          protocol: "https",
+          hostname: "lh3.googleusercontent.com",
+          pathname: "/**",
+        },
+        {
+          protocol: "https",
+          hostname: "firebasestorage.googleapis.com",
+          pathname: "/**",
+        },
+        {
+          protocol: "https",
+          hostname: "platform-lookaside.fbsbx.com",
+          pathname: "/**",
+        },
+      ],
+    },
+  };
+  
+  module.exports = nextConfig;
