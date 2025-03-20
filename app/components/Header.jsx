@@ -7,16 +7,19 @@ import { HiSearch, HiBell, HiChat } from "react-icons/hi";
 import { db } from "./../Shared/firebaseConfig";
 import { getUserIdByEmail } from "./../Shared/firebaseUtils";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 function Header() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  const userEmail = useMemo(() => session?.user?.email, [session]);
+
   useEffect(() => {
-    if (session?.user) {
+    if (userEmail) {
       saveUserInfo();
     }
-  }, [session]);
+  }, [userEmail]);
 
   const saveUserInfo = async () => {
     try {
@@ -85,27 +88,33 @@ function Header() {
       <HiBell className="text-[18px] md:text-[50px] text-gray-500 cursor-pointer" />
       <HiChat className="text-[18px] md:text-[50px] text-gray-500 cursor-pointer" />
 
-      {session?.user ? (
-        <Image
-          src={session.user.image}
-          onClick={async () => {
-            const userId = await getUserIdByEmail(session.user.email);
-            if (userId) {
-              router.push("/" + userId);
-            }
-          }}
-      
-          alt="user-image"
-          width={60}
-          height={60}
-          className="hover:bg-gray-300 p-2 rounded-full cursor-pointer"
-        />
-      ) : (
-        <button className="font-semibold p-2 px-4 rounded-full bg-black text-white text-[16px]"
-          onClick={() => signIn()}>
-          Login
-        </button>
-      )}
+      {status === "loading" ? (
+      <div className="w-[60px] h-[60px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-500"></div>
+      </div>
+    ) : session?.user ? (
+      <Image
+        src={session.user.image}
+        onClick={async () => {
+          const userId = await getUserIdByEmail(session.user.email);
+          if (userId) {
+            router.push("/" + userId);
+          }
+        }}
+        alt="user-image"
+        width={60}
+        height={60}
+        className="hover:bg-gray-300 p-2 rounded-full cursor-pointer"
+      />
+    ) : (
+      <button
+        className="font-semibold p-2 px-4 rounded-full bg-black text-white text-[16px]"
+        onClick={() => signIn()}
+      >
+        Login
+      </button>
+    )}
+
     </div>
   );
 }
