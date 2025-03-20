@@ -1,57 +1,45 @@
-import React, { useEffect, useState } from "react";
-import PinItem from "./PinItem";
+import Image from 'next/image'
+import React from 'react'
+import UserTag from '../UserTag'
+import { useRouter } from 'next/navigation'
 
-function PinList({ listOfPins }) {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading delay
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000); // Adjust time as needed
-  }, []);
-
+function PinItem({pin}) {
+  const router = useRouter();
+  const user = {
+    name: pin?.userName,
+    image: pin?.userImage,
+  }
+  
   return (
-    <div
-      className="mt-7 px-2 md:px-5
-     columns-2 md:columns-3
-     lg:columns-4 mb-4
-     xl:columns-5 space-y-6 mx-auto"
-    >
-      {loading
-        ? // Render Skeleton while loading
-          Array(15)
-            .fill(0)
-            .map((_, index) => <SkeletonPin key={index} />)
-        : // Render Pins when loaded
-          listOfPins.map((item, index) => <PinItem key={index} pin={item} />)}
+    <div className='mb-4 break-inside-avoid'>
+      <div className="relative 
+        before:absolute
+        before:h-full
+        before:w-full
+        before:rounded-3xl
+        before:z-10
+        before:bg-black
+        before:opacity-0
+        hover:before:opacity-20
+        cursor-pointer
+        overflow-hidden"
+        onClick={() => router.push("/pin/"+pin.id)}
+      >
+        <Image 
+          src={pin.image}
+          alt={pin.title}
+          width={0}
+          height={0}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className='rounded-3xl w-full h-auto object-cover cursor-pointer relative z-0'
+          priority={false}
+          unoptimized={false}
+        />
+      </div>
+      <h2 className='font-bold text-[18px] mb-1 mt-2 line-clamp-2'>{pin.title}</h2>
+      <UserTag user={user} />
     </div>
-  );
+  )
 }
 
-// Skeleton component for loading state with varying heights
-const SkeletonPin = () => {
-  // Create random heights to mimic Pinterest's variable card sizes
-  const getRandomHeight = () => {
-    // Pinterest-like proportions - some shorter, some taller
-    const heights = [150, 180, 220, 250, 280, 320, 350];
-    return heights[Math.floor(Math.random() * heights.length)];
-  };
-  
-  const height = getRandomHeight();
-  
-  return (
-    <div 
-      className="bg-gray-200 animate-pulse rounded-lg w-full mb-4 overflow-hidden"
-      style={{ height: `${height}px` }}
-    >
-      {/* Optional: Add skeleton for pin details */}
-      <div className="absolute bottom-0 w-full p-3">
-        <div className="h-3 bg-gray-300 rounded-full w-2/3 mb-2"></div>
-        <div className="h-2 bg-gray-300 rounded-full w-1/2"></div>
-      </div>
-    </div>
-  );
-};
-
-export default PinList;
+export default PinItem
