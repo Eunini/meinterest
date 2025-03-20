@@ -1,4 +1,5 @@
-import app from '@/app/Shared/firebaseConfig'
+// import { db } from '@/app/Shared/firebaseConfig'
+
 import React, { useEffect } from 'react'
 import PinItem from './PinItem'
 function PinList({listOfPins}) {

@@ -3,18 +3,19 @@ import React, { useEffect, useState } from 'react'
 import PinImage from './../../components/PinDetail/PinImage'
 import PinInfo from './../../components/PinDetail/PinInfo'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import app from '@/app/Shared/firebaseConfig'
+import { app, db } from '@/app/Shared/firebaseConfig'
 import { HiArrowSmallLeft } from "react-icons/hi2";
 import { useRouter } from 'next/navigation'
 function PinDetail({params}) {
   const router=useRouter();
-  const db=getFirestore(app);
   const [pinDetail,setPinDetail]=useState([]);
+  
   useEffect(()=>{
     getPinDetail();
   },[])
+
  const getPinDetail=async()=>{
-      const docRef = doc(db, 'pinterest-post',params.pinId );
+      const docRef = doc(db, 'meinterest-post',params.pinId );
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
        
@@ -23,10 +24,11 @@ function PinDetail({params}) {
         console.log("No such document!");
       }
   }
+
   return (
     <>
    {pinDetail? 
-   <div className=' bg-white p-3 md:p-12 rounded-2xl md:px-24 lg:px-36'>
+   <div className=' bg-white flex flex-col p-3 md:p-12 rounded-2xl md:px-24 lg:px-36'>
        <HiArrowSmallLeft className='text-[60px] font-bold ml-[-50px] 
        cursor-pointer hover:bg-gray-200 rounded-full p-2 '
        onClick={()=>router.back()}/>

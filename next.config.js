@@ -4,7 +4,8 @@ const nextConfig = {
         domains: [
             'lh3.googleusercontent.com', 
             'firebasestorage.googleapis.com',
-            'platform-lookaside.fbsbx.com'  
+            'platform-lookaside.fbsbx.com',
+            "res.cloudinary.com"
         ]
     }
 };

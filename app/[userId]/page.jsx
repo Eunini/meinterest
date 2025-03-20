@@ -1,61 +1,70 @@
-"use client"
-import React, { useEffect,useState } from 'react'
-import app from '../Shared/firebaseConfig';
-import UserInfo from './../components/UserInfo'
-import { collection, getDocs,getDoc,doc, getFirestore, query, where } from 'firebase/firestore'
-import PinList from './../components/Pins/PinList'
-function Profile({params}) {
-  const db=getFirestore(app);
-  const [userInfo,setUserInfo]=useState();
-  const [listOfPins,setListOfPins]=useState([]);
-  useEffect(()=>{
-    console.log(params.userId.replace('%40','@'))
-    if(params)
-    {
-      getUserInfo(params.userId.replace('%40','@'))
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { db } from "../Shared/firebaseConfig";
+import UserInfo from "./../components/UserInfo";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import PinList from "./../components/Pins/PinList";
+
+function Profile({ params }) {
+  const [userInfo, setUserInfo] = useState(null);
+  const [listOfPins, setListOfPins] = useState([]);
+
+  useEffect(() => {
+    const userId = params.userId;
+    if (userId) {
+      getUserInfo(userId);
     }
-  },[params]);
+  }, [params]);
 
+  // Fetch user by Firestore-generated ID
+  const getUserInfo = async (userId) => {
+    try {
+      const userRef = doc(db, "users", userId); 
+      const userSnapshot = await getDoc(userRef);
 
-  const getUserInfo=async(email)=>{
-    const docRef = doc(db, "user",email );
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      
-      setUserInfo(docSnap.data())
-    } else {
-      // docSnap.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  }
-  useEffect(()=>{
-      if(userInfo)
-      {
-        getUserPins();
+      if (userSnapshot.exists()) {
+        setUserInfo({ id: userId, ...userSnapshot.data() });
+      } else {
+        console.warn("No such user found!");
       }
-  },[userInfo])
-  const getUserPins=async()=>{
-    setListOfPins([])
-      const q=query(collection(db,'pinterest-post')
-      ,where("email",'==',userInfo.email));
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo) {
+      getUserPins();
+    }
+  }, [userInfo]);
+
+  const getUserPins = async () => {
+    setListOfPins([]);
+    try {
+      const pinsRef = collection(db, "meinterest-post");
+      const q = query(pinsRef, where("userId", "==", userInfo.id)); // Query by userId
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-     
-      setListOfPins(listOfPins=>[...listOfPins,doc.data()]);
-      });
-  }
+
+      const pins = querySnapshot.docs.map((doc) => doc.data());
+      setListOfPins(pins);
+    } catch (error) {
+      console.error("Error fetching user pins:", error);
+    }
+  };
+
   return (
     <div>
-     {userInfo?
-     <div>
-      <UserInfo userInfo={userInfo} />
-     
-      <PinList listOfPins={listOfPins}  />
-      </div> :null}
+      {userInfo ? (
+        <div>
+          <UserInfo userInfo={userInfo} />
+          <PinList listOfPins={listOfPins} />
+        </div>
+      ) : (
+        <p>Loading user info...</p>
+      )}
     </div>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

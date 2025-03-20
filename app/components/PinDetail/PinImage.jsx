@@ -9,7 +9,6 @@ function PinImage({pinDetail}) {
       alt={pinDetail.title}
       width={1000}
       height={1000}
-    
       className='rounded-2xl'
       />
 

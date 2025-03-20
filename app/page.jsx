@@ -1,32 +1,30 @@
 "use client"
-import Image from 'next/image'
+// import Image from 'next/image'
 
-import { useSession, signIn, signOut } from "next-auth/react"
-import { collection, getDocs, getFirestore, query } from 'firebase/firestore';
-import app from './Shared/firebaseConfig';
+// import { useSession, signIn, signOut } from "next-auth/react"
+import { collection, getDocs, getFirestore,initializeFirestore, enableIndexedDbPersistence , query } from 'firebase/firestore';
+import { db } from './Shared/firebaseConfig';
 import { useEffect, useState } from 'react';
 import PinList from './components/Pins/PinList';
 
 export default function Home() {
-  const db=getFirestore(app);
   const [listOfPins,setListOfPins]=useState([]);
   
   useEffect(()=>{
     getAllPins();
   },[])
-  const getAllPins=async()=>{
-    setListOfPins([])
-      const q=query(collection(db,
-        'pinterest-post')
-      );
+
+  const getAllPins = async () => {
+    setListOfPins([]);
+    try {
+      const q = query(collection(db, "meinterest-post"));
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-       
-       
-      setListOfPins((listOfPins)=>
-      [...listOfPins,doc.data()]);
-      });
-  }
+      const pins = querySnapshot.docs.map(doc => doc.data());
+      setListOfPins(pins);
+    } catch (error) {
+      console.error("Error fetching pins:", error);
+    }
+  };
 
   return (
     <>
