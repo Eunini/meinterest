@@ -168,7 +168,7 @@ function Header() {
         ) : (
           <button
             className="font-semibold p-2 px-3 rounded-full bg-black text-white text-[14px]"
-            onClick={() => signIn('google')}
+            onClick={() => signIn()}
           >
             Login
           </button>
