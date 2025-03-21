@@ -8,21 +8,28 @@ import { useEffect, useState } from 'react';
 import PinList from './components/Pins/PinList';
 
 export default function Home() {
-  const [listOfPins,setListOfPins]=useState([]);
-  
-  useEffect(()=>{
+  const [listOfPins, setListOfPins] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
     getAllPins();
-  },[])
+  }, []);
 
   const getAllPins = async () => {
-    setListOfPins([]);
     try {
-      const q = query(collection(db, "meinterest-post"));
-      const querySnapshot = await getDocs(q);
-      const pins = querySnapshot.docs.map(doc => doc.data());
+      const pinsRef = collection(db, "meinterest-post");
+      const querySnapshot = await getDocs(pinsRef);
+
+      const pins = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
       setListOfPins(pins);
     } catch (error) {
-      console.error("Error fetching pins:", error);
+      console.error("Error fetching all pins:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

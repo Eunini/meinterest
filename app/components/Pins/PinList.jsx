@@ -1,50 +1,58 @@
 import React, { useEffect, useState } from "react";
 import PinItem from "./PinItem";
+import { useSession } from "next-auth/react";
 
-function PinList({ listOfPins }) {
+function PinList({ listOfPins = [], profileUserId = null, profileUser = null }) {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    // Simulate loading delay
-    setTimeout(() => {
+    if (profileUserId && session?.user) {
+      setIsOwner(session.user.email === profileUser?.email);
+    } else {
+      setIsOwner(false);
+    }
+
+    const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Adjust time as needed
-  }, []);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [profileUserId, session, profileUser]);
+
+  if (!loading && (!listOfPins || listOfPins.length === 0)) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <p className="text-xl font-medium mb-2 text-gray-500">No pins found</p>
+        {profileUserId && isOwner && <p>Create your first pin to get started!</p>}
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="mt-7 px-2 md:px-5
-     columns-2 md:columns-3
-     lg:columns-4 mb-4
-     xl:columns-5 space-y-6 mx-auto"
-    >
+    <div className="mt-7 px-2 md:px-5 columns-2 md:columns-3 lg:columns-4 xl:columns-5 space-y-6 mx-auto">
       {loading
-        ? // Render Skeleton while loading
-          Array(15)
-            .fill(0)
-            .map((_, index) => <SkeletonPin key={index} />)
-        : // Render Pins when loaded
-          listOfPins.map((item, index) => <PinItem key={index} pin={item} />)}
+        ? Array(15).fill(0).map((_, index) => <SkeletonPin key={index} />)
+        : listOfPins.map((item, index) => (
+            <PinItem key={item.id || index} pin={item} isOwner={isOwner} />
+          ))}
     </div>
   );
 }
 
-// Skeleton component for loading state with varying heights
+// Skeleton Loader
 const SkeletonPin = () => {
-  // Create random heights to mimic Pinterest's variable card sizes
-  const getRandomHeight = () => {
-    // Pinterest-like proportions - some shorter, some taller
-    const heights = [150, 180, 220, 250, 280, 320, 350];
-    return heights[Math.floor(Math.random() * heights.length)];
-  };
-  
-  const height = getRandomHeight();
-  
+  const heights = [150, 180, 220, 250, 280, 320, 350];
+  const height = heights[Math.floor(Math.random() * heights.length)];
+
   return (
-    <div 
-      className="bg-gray-200 animate-pulse rounded-lg w-full mb-4 overflow-hidden"
-      style={{ height: `${height}px` }}
-    >
+    <div className="bg-gray-200 animate-pulse rounded-lg w-full mb-4" style={{ height }}>
+      <div className="h-3 bg-gray-300 rounded mt-2 mx-2"></div>
+      <div className="flex items-center mt-3 mx-2">
+        <div className="w-6 h-6 rounded-full bg-gray-300 mr-2"></div>
+        <div className="h-2 bg-gray-300 rounded w-24"></div>
+      </div>
     </div>
   );
 };
