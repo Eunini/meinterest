@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { db } from "../Shared/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
@@ -17,8 +17,24 @@ function Form() {
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
+  const tagInputRef = useRef(null);
   const router = useRouter();
   const postId = Date.now().toString();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   // Handle file selection and preview
   const handleFileChange = (event) => {
@@ -31,15 +47,29 @@ function Form() {
 
   // Handle adding tags
   const handleAddTag = (e) => {
-    if (e.key === "Enter" && tagInput.trim() !== "") {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
+    if (e.key === "Enter" || e.key === "," || e.type === "blur") {
+      e.preventDefault();
+      
+      if (tagInput.trim() !== "") {
+        // Split by comma and filter out empty strings
+        const newTags = tagInput
+          .split(",")
+          .map(tag => tag.trim())
+          .filter(tag => tag !== "");
+        
+        // Filter out duplicates
+        const uniqueTags = [...new Set([...tags, ...newTags])];
+        setTags(uniqueTags);
+        setTagInput("");
+      }
     }
   };
 
   // Remove a tag
   const removeTag = (index) => {
     setTags(tags.filter((_, i) => i !== index));
+    // Focus back on the input after removing a tag
+    tagInputRef.current.focus();
   };
 
   // Function to upload image and save post
@@ -103,8 +133,8 @@ function Form() {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl">
-      <div className="flex justify-end mb-6">
+    <div className="bg-white p-3 md:p-5 rounded-2xl">
+      <div className="flex justify-end mb-4 md:mb-6">
         <button
           onClick={onSave}
           className="bg-red-500 p-2 text-white font-semibold px-3 rounded-lg"
@@ -124,12 +154,12 @@ function Form() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-10">
         {/* Image Upload Input */}
         <div className="flex flex-col items-center space-y-4">
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input type="file" accept="image/*" required onChange={handleFileChange} />
           {preview && (
-            <img src={preview} alt="Preview" className="w-32 h-32 rounded-lg" />
+            <img src={preview} alt="Preview" className="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover" />
           )}
         </div>
 
@@ -137,50 +167,75 @@ function Form() {
           <div className="w-full">
             <input
               type="text"
+              required
               placeholder="Add your title"
               onChange={(e) => setTitle(e.target.value)}
-              className="text-[35px] outline-none font-bold w-full border-b-[2px] border-gray-400 placeholder-gray-400"
+              className="text-xl md:text-[35px] outline-none font-bold w-full border-b-[2px] border-gray-400 placeholder-gray-400"
             />
-            <h2 className="text-[12px] mb-8 w-full text-gray-400">
+            <h2 className="text-[12px] mb-4 md:mb-8 w-full text-gray-400">
               The first 40 characters are what usually show up in feeds.
             </h2>
 
             <textarea
               onChange={(e) => setDesc(e.target.value)}
               placeholder="Tell everyone what your pin is about"
-              className="outline-none w-full mt-8 pb-1 text-[14px] border-b-[2px] border-gray-400 placeholder-gray-400"
+              className="required outline-none w-full mt-4 md:mt-8 pb-1 text-[14px] border-b-[2px] border-gray-400 placeholder-gray-400"
             />
 
             <input
               type="text"
               onChange={(e) => setLink(e.target.value)}
-              placeholder="Add some tags for pin"
-              className="outline-none w-full pb-1 mt-[40px] border-b-[2px] border-gray-400 placeholder-gray-400"
+              placeholder="Add a destination link"
+              className="outline-none w-full pb-1 mt-4 md:mt-[40px] border-b-[2px] border-gray-400 placeholder-gray-400"
             />
 
             {/* Tags Input */}
-            <div className="mt-4">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleAddTag}
-                placeholder="Press Enter to add a tag"
-                className="outline-none w-full pb-1 border-b-[2px] border-gray-400 placeholder-gray-400"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-4 md:mt-6">
+              <div className="relative">
+                <input
+                  ref={tagInputRef}
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === ",") {
+                      handleAddTag(e);
+                    }
+                  }}
+                  onBlur={handleAddTag}
+                  placeholder={isMobile ? 
+                    "Add tags (separate with comma or enter)" :
+                    "Add tags (separate with comma or press Enter)"}
+                  className="outline-none w-full pb-1 border-b-[2px] border-gray-400 placeholder-gray-400 text-sm md:text-base"
+                />
+                <div className="absolute right-0 bottom-2 text-xs text-gray-500">
+                  {isMobile ? "Press , or Enter" : "Press Enter or ,"}
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-3">
                 {tags.map((tag, index) => (
-                  <span key={index} className="bg-gray-300 px-2 py-1 rounded-lg text-sm flex items-center">
+                  <span 
+                    key={index} 
+                    className="bg-[#1e1e1e] text-white px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                  >
                     {tag}
                     <button
                       onClick={() => removeTag(index)}
-                      className="ml-2 text-red-500"
+                      className="ml-1 text-white hover:text-red-300 font-bold"
+                      aria-label={`Remove tag ${tag}`}
                     >
                       ×
                     </button>
                   </span>
                 ))}
               </div>
+              
+              {tags.length > 0 && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Click × to remove tags
+                </p>
+              )}
             </div>
           </div>
         </div>

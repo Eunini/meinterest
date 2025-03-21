@@ -61,7 +61,7 @@ function Profile({ params }) {
           <PinList listOfPins={listOfPins} />
         </div>
       ) : (
-        <p>Loading user info...</p>
+        <p></p>
       )}
     </div>
   );
