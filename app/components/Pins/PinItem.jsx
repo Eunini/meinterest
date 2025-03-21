@@ -35,7 +35,7 @@ function PinItem({pin}) {
         onClick={() => router.push("/pin/"+pin.id)}
         style={{ height: `${randomHeight}px` }}
       >
-        <Image 
+        <Image Loading user
           src={pin.image}
           alt={pin.title}
           fill={true}

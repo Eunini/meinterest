@@ -1,13 +1,12 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { HiSearch, HiBell, HiChat } from "react-icons/hi";
 import { db } from "./../Shared/firebaseConfig";
 import { getUserIdByEmail } from "./../Shared/firebaseUtils";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 
 function Header() {
   const { data: session, status } = useSession();
@@ -30,22 +29,17 @@ function Header() {
         return;
       }
   
-      // Reference the "users" collection
       const usersRef = collection(db, "users");
-      
-      // Check if user already exists
       const q = query(usersRef, where("email", "==", session.user.email));
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
-        // If no user document exists, add a new one
         await addDoc(usersRef, {
           userName: session.user.name,
           email: session.user.email,
           userImage: session.user.image,
           createdAt: new Date(),
         });
-  
         console.log("New user added to Firestore");
       } else {
         console.log("User already exists in Firestore");
@@ -66,24 +60,22 @@ function Header() {
   const handleSearch = () => {
     if (searchQuery.trim()) {
       console.log("Searching for:", searchQuery);
-      // Implement your search functionality here
-      // For example: router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
     
-    // On mobile, hide the search input after search
     if (showMobileSearch) {
       setShowMobileSearch(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
 
   return (
-    <div className="flex justify-between gap-3 md:gap-2 items-center p-6">
+    <div className="flex justify-between gap-3 md:gap-2 items-center p-6 w-full overflow-x-hidden">
+      {/* Logo */}
       <Image
         src="/logo.png"
         alt="logo"
@@ -92,20 +84,22 @@ function Header() {
         onClick={() => router.push("/")}
         className="hover:bg-gray-300 py-2 px-4 rounded-full cursor-pointer"
       />
-      <button className="bg-black text-white p-3 outline-0 rounded-md text-[18px] hidden md:block"
-        onClick={() => router.push("/")}>
+      <button 
+        className="bg-black text-white p-3 outline-0 rounded-md text-[18px] hidden md:block"
+        onClick={() => router.push("/")}
+      >
         Home
       </button>
-      
-      {/* Mobile search is expanded, hide Create button */}
-      {!showMobileSearch && (
-        <button className="font-semibold p-3 px-6 rounded-full text-[18px] md:block"
-          onClick={() => onCreateClick()}>
-          Create
-        </button>
-      )}
-      
-      {/* Desktop search */}
+
+      {/* Create button (only hides when mobile search is active) */}
+      <button 
+        className={`font-semibold p-3 px-6 rounded-full text-[18px] md:block ${showMobileSearch ? "hidden" : "block"}`}
+        onClick={() => onCreateClick()}
+      >
+        Create
+      </button>
+
+      {/* Desktop Search */}
       <div className="bg-[#e9e9e9] p-3 gap-3 items-center rounded-full w-full hidden md:flex">
         <HiSearch className="text-[24px] text-gray-500" />
         <input 
@@ -117,33 +111,36 @@ function Header() {
           className="bg-transparent outline-none w-full text-[18px]" 
         />
       </div>
-      
-      {/* Mobile search - controlled by showMobileSearch state */}
-      {showMobileSearch ? (
-        <div className="flex bg-[#e9e9e9] p-3 gap-3 items-center rounded-full flex-1 md:hidden">
-          <HiSearch 
-            className="text-[24px] text-gray-500 cursor-pointer" 
-            onClick={handleSearch}
-          />
-          <input 
-            type="text" 
-            placeholder="Search" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            autoFocus
-            className="bg-transparent outline-none w-full text-[18px]" 
-          />
-        </div>
-      ) : (
-        <div 
-          className="bg-[#e9e9e9] p-3 rounded-full cursor-pointer md:hidden"
-          onClick={() => setShowMobileSearch(true)}
-        >
-          <HiSearch className="text-[24px] text-gray-500" />
-        </div>
-      )}
 
+      {/* Mobile Search */}
+      <div className="flex md:hidden w-full">
+        {showMobileSearch ? (
+          <div className="flex bg-[#e9e9e9] p-3 gap-3 items-center rounded-full flex-1">
+            <HiSearch 
+              className="text-[24px] text-gray-500 cursor-pointer" 
+              onClick={handleSearch}
+            />
+            <input 
+              type="text" 
+              placeholder="Search" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              autoFocus
+              className="bg-transparent outline-none w-full text-[18px]" 
+            />
+          </div>
+        ) : (
+          <div 
+            className="bg-[#e9e9e9] p-3 rounded-full cursor-pointer"
+            onClick={() => setShowMobileSearch(true)}
+          >
+            <HiSearch className="text-[24px] text-gray-500" />
+          </div>
+        )}
+      </div>
+
+      {/* User Profile & Login */}
       {status === "loading" ? (
         <div className="w-[60px] h-[60px] flex items-center justify-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-500"></div>
@@ -165,7 +162,7 @@ function Header() {
       ) : (
         <button
           className="font-semibold p-2 px-4 rounded-full bg-black text-white text-[16px]"
-          onClick={() => signIn()}
+          onClick={() => signIn('google')}
         >
           Login
         </button>
