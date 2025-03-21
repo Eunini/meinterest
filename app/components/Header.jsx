@@ -59,7 +59,8 @@ function Header() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      console.log("Searching for:", searchQuery);
+      // Navigate to search results page with the query parameter
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
     
     if (showMobileSearch) {
@@ -74,99 +75,105 @@ function Header() {
   };
 
   return (
-    <div className="flex justify-between gap-3 md:gap-2 items-center p-6 w-full overflow-x-hidden">
-      {/* Logo */}
-      <Image
-        src="/logo.png"
-        alt="logo"
-        width={100}
-        height={100}
-        onClick={() => router.push("/")}
-        className="hover:bg-gray-300 py-2 px-4 rounded-full cursor-pointer"
-      />
+    <div className="flex justify-between items-center px-3 py-4 sm:px-4 md:px-6 w-full overflow-x-hidden">
+      {/* Logo - reduced padding and sizing for mobile */}
+      <div className="flex-shrink-0">
+        <Image
+          src="/logo.png"
+          alt="logo"
+          width={80}
+          height={80}
+          onClick={() => router.push("/")}
+          className="hover:bg-gray-300 p-1 sm:p-2 rounded-full cursor-pointer"
+        />
+      </div>
+
+      {/* Home button */}
       <button 
-        className="bg-black text-white p-2 outline-0 rounded-md text-[18px] hidden md:block"
+        className="bg-black text-white p-2 outline-0 rounded-md text-[16px] hidden md:block flex-shrink-0"
         onClick={() => router.push("/")}
       >
         Home
       </button>
 
       {/* Create button (only hides when mobile search is active) */}
-      <button 
-        className={`font-semibold p-3 sm:px-6 px-1 rounded-full text-[18px] md:block ${showMobileSearch ? "hidden" : "block"}`}
-        onClick={() => onCreateClick()}
-      >
-        Create
-      </button>
+      {!showMobileSearch && (
+        <button 
+          className="font-semibold p-2 sm:p-3 rounded-full text-[16px] flex-shrink-0"
+          onClick={() => onCreateClick()}
+        >
+          Create
+        </button>
+      )}
 
       {/* Desktop Search */}
-      <div className="bg-[#e9e9e9] p-3 gap-3 items-center rounded-full w-full hidden md:flex">
-        <HiSearch className="text-[24px] text-gray-500" />
+      <div className="bg-[#e9e9e9] p-3 gap-3 items-center rounded-full w-full max-w-xl hidden md:flex mx-4">
+        <HiSearch className="text-[20px] text-gray-500" />
         <input 
           type="text" 
-          placeholder="Search" 
+          placeholder="Search for tags..." 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="bg-transparent outline-none w-full text-[18px]" 
+          className="bg-transparent outline-none w-full text-[16px]" 
         />
       </div>
 
       {/* Mobile Search */}
-      <div className="flex md:hidden w-full">
-        {showMobileSearch ? (
-          <div className="flex bg-[#e9e9e9] p-3 gap-3 items-center rounded-full flex-1">
-            <HiSearch 
-              className="text-[24px] text-gray-500 cursor-pointer" 
-              onClick={handleSearch}
-            />
-            <input 
-              type="text" 
-              placeholder="Search" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              autoFocus
-              className="bg-transparent outline-none w-full text-[16px]" 
-            />
-          </div>
-        ) : (
-          <div 
-            className="bg-[#e9e9e9] p-3 rounded-full cursor-pointer"
-            onClick={() => setShowMobileSearch(true)}
-          >
-            <HiSearch className="text-[24px] text-gray-500" />
-          </div>
-        )}
-      </div>
+      {showMobileSearch ? (
+        <div className="flex bg-[#e9e9e9] p-2 gap-2 items-center rounded-full flex-1 mx-2 md:hidden">
+          <HiSearch 
+            className="text-[20px] text-gray-500 cursor-pointer" 
+            onClick={handleSearch}
+          />
+          <input 
+            type="text" 
+            placeholder="Search for tags..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            autoFocus
+            className="bg-transparent outline-none w-full text-[14px]" 
+          />
+        </div>
+      ) : (
+        <div 
+          className="bg-[#e9e9e9] p-2 rounded-full cursor-pointer flex-shrink-0 md:hidden"
+          onClick={() => setShowMobileSearch(true)}
+        >
+          <HiSearch className="text-[20px] text-gray-500" />
+        </div>
+      )}
 
       {/* User Profile & Login */}
-      {status === "loading" ? (
-        <div className="w-[60px] h-[60px] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-500"></div>
-        </div>
-      ) : session?.user ? (
-        <Image
-          src={session.user.image}
-          onClick={async () => {
-            const userId = await getUserIdByEmail(session.user.email);
-            if (userId) {
-              router.push("/" + userId);
-            }
-          }}
-          alt="user-image"
-          width={60}
-          height={60}
-          className="hover:bg-gray-300 p-2 rounded-full cursor-pointer"
-        />
-      ) : (
-        <button
-          className="font-semibold p-2 px-4 rounded-full bg-black text-white text-[16px]"
-          onClick={() => signIn('google')}
-        >
-          Login
-        </button>
-      )}
+      <div className="flex-shrink-0 ml-2">
+        {status === "loading" ? (
+          <div className="w-10 h-10 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-500"></div>
+          </div>
+        ) : session?.user ? (
+          <Image
+            src={session.user.image}
+            onClick={async () => {
+              const userId = await getUserIdByEmail(session.user.email);
+              if (userId) {
+                router.push("/" + userId);
+              }
+            }}
+            alt="user-image"
+            width={40}
+            height={40}
+            className="hover:bg-gray-300 p-1 rounded-full cursor-pointer"
+          />
+        ) : (
+          <button
+            className="font-semibold p-2 px-3 rounded-full bg-black text-white text-[14px]"
+            onClick={() => signIn('google')}
+          >
+            Login
+          </button>
+        )}
+      </div>
     </div>
   );
 }

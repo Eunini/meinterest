@@ -15,6 +15,8 @@ function Form() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
   const router = useRouter();
   const postId = Date.now().toString();
 
@@ -25,6 +27,19 @@ function Form() {
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
     }
+  };
+
+  // Handle adding tags
+  const handleAddTag = (e) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  // Remove a tag
+  const removeTag = (index) => {
+    setTags(tags.filter((_, i) => i !== index));
   };
 
   // Function to upload image and save post
@@ -67,6 +82,7 @@ function Form() {
         title,
         desc,
         link,
+        tags,
         image: imageUrl,
         userName: session?.user?.name,
         email: session?.user?.email,
@@ -138,9 +154,34 @@ function Form() {
             <input
               type="text"
               onChange={(e) => setLink(e.target.value)}
-              placeholder="add some tags for pin"
-              className="outline-none w-full pb-1 mt-[90px] border-b-[2px] border-gray-400 placeholder-gray-400"
+              placeholder="Add some tags for pin"
+              className="outline-none w-full pb-1 mt-[40px] border-b-[2px] border-gray-400 placeholder-gray-400"
             />
+
+            {/* Tags Input */}
+            <div className="mt-4">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleAddTag}
+                placeholder="Press Enter to add a tag"
+                className="outline-none w-full pb-1 border-b-[2px] border-gray-400 placeholder-gray-400"
+              />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {tags.map((tag, index) => (
+                  <span key={index} className="bg-gray-300 px-2 py-1 rounded-lg text-sm flex items-center">
+                    {tag}
+                    <button
+                      onClick={() => removeTag(index)}
+                      className="ml-2 text-red-500"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
