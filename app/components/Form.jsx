@@ -156,7 +156,7 @@ function Form() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-10">
         {/* Image Upload Input */}
-        <div className="flex flex-col items-center space-y-4">
+        <div className="flex flex-col items-center justify-center mx-auto space-y-4">
           <input type="file" accept="image/*" required onChange={handleFileChange} />
           {preview && (
             <img src={preview} alt="Preview" className="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover" />
