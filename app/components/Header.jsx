@@ -85,7 +85,7 @@ function Header() {
         className="hover:bg-gray-300 py-2 px-4 rounded-full cursor-pointer"
       />
       <button 
-        className="bg-black text-white p-3 outline-0 rounded-md text-[18px] hidden md:block"
+        className="bg-black text-white p-2 outline-0 rounded-md text-[18px] hidden md:block"
         onClick={() => router.push("/")}
       >
         Home
@@ -93,7 +93,7 @@ function Header() {
 
       {/* Create button (only hides when mobile search is active) */}
       <button 
-        className={`font-semibold p-3 px-6 rounded-full text-[18px] md:block ${showMobileSearch ? "hidden" : "block"}`}
+        className={`font-semibold p-3 sm:px-6 px-1 rounded-full text-[18px] md:block ${showMobileSearch ? "hidden" : "block"}`}
         onClick={() => onCreateClick()}
       >
         Create
@@ -127,7 +127,7 @@ function Header() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               autoFocus
-              className="bg-transparent outline-none w-full text-[18px]" 
+              className="bg-transparent outline-none w-full text-[16px]" 
             />
           </div>
         ) : (
