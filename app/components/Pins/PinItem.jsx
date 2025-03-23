@@ -61,7 +61,7 @@ function PinItem({ pin, isOwner = false }) {
   // Handle pin edit
   const handleEdit = (e) => {
     e.stopPropagation(); // Prevent navigation to pin detail
-    router.push(`/EditPinPage/${pin.id}`);
+    router.push(`/edit-pin/${pin.id}`);
     setShowMenu(false);
   };
 

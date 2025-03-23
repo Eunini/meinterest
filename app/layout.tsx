@@ -11,7 +11,7 @@ export const metadata = {
   description: "Discover and save creative ideas from around the world.",
   images: [
     {
-      url: "logo1.png",
+      url: "logo.png",
       width: 1200,
       height: 630,
       alt: "MeInterest Preview",
@@ -24,7 +24,7 @@ export const metadata = {
     url: "https://yourwebsite.com",
     images: [
       {
-        url: "logo1.png",
+        url: "logo.png",
         width: 1200,
         height: 630,
         alt: "MeInterest Preview",
@@ -35,7 +35,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "MeInterest",
     description: "A Pinterest-like platform for creative inspiration.",
-    images: ["logo1.png"],
+    images: ["logo.png"],
   },
 };
 

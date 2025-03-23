@@ -59,7 +59,7 @@ function PinInfo({ pinDetail }) {
           className="p-2 bg-[#e9e9e9] px-5 text-[18px] rounded-full flex items-center hover:scale-105 transition-all"
           onClick={sharePin}
         >
-          <HiOutlineShare size={24} />
+          <HiOutlineShare size={24} className="px-2" />
           Share
         </button>
 
