@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import PinImage from './../../components/PinDetail/PinImage'
 import PinInfo from './../../components/PinDetail/PinInfo'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import { app, db } from '../Shared/firebaseConfig'
+import { doc, getDoc} from 'firebase/firestore'
+import {  db } from '../../Shared/firebaseConfig'
 import { HiArrowSmallLeft } from "react-icons/hi2";
 import { useRouter } from 'next/navigation'
 function PinDetail({params}) {
