@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { db } from "../../Shared/firebaseConfig";
+import { db } from "../Shared/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
